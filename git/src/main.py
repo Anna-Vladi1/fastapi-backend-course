@@ -1,18 +1,19 @@
-
 class Order:
     TAX_RATE = 0.08  # 8% налог
     SERVICE_CHARGE = 0.05  # 5% сервисный сбор
+
 
     def __init__(self, customer):
         self.customer = customer
         self.dishes = []
 
-def main():
+
+    def main():
     """
     Точка входа в программу: здесь мы загружаем книги,
     показываем меню и обрабатываем ввод пользователя.
     """
-    books = load_books()  # Загрузили список книг из JSON
+    books = load_books()  # Загрузили список книг из JSON  # noqa: F821
 
     while True:
         print("\n=== Управление онлайн-библиотекой ===")
@@ -24,33 +25,36 @@ def main():
 
         choice = input("Выберите действие (1-5): ").strip()
 
-        if choice == '1':
+        if choice == "1":
             print("\nСписок книг:")
-            print(list_books(books))
+            print(list_books(books))  # noqa: F821
 
-        elif choice == '2':
+        elif choice == "2":
             print("\nДобавление новой книги:")
             title = input("Введите название: ").strip()
             author = input("Введите автора: ").strip()
             year = input("Введите год издания: ").strip()
 
             # Получаем новый список с добавленной книгой
-            new_books = add_book(books, title, author, year)
+            new_books = add_book(books, title, author, year)  # noqa: F821
             books = new_books  # Обновляем переменную, чтобы сохранить изменения
-            save_books(books)  # Сразу сохраняем в файл
+            save_books(books)  # Сразу сохраняем в файл  # noqa: F821
             print("Книга добавлена!")
 
-        elif choice == '3':
+        elif choice == "3":
             print("\nУдаление книги:")
-            title_to_remove = input("Введите название книги, которую хотите удалить: ").strip()
+            title_to_remove = input(
+                "Введите название книги, которую хотите удалить: "
+            ).strip()
 
-            new_books = remove_book(books, title_to_remove)
+            new_books = remove_book(books, title_to_remove)  # noqa: F821
             if len(new_books) < len(books):
                 books = new_books
-                save_books(books)
+                save_books(books)  # noqa: F821
                 print("Книга удалена!")
             else:
                 print("Книга с таким названием не найдена.")
+
 
     def remove_dish(self, dish):
         if dish in self.dishes:
@@ -58,18 +62,22 @@ def main():
         else:
             raise ValueError("Такого блюда нет в заказе.")
 
+
     def calculate_total(self):
         return sum(dish.price for dish in self.dishes)
+
 
     def apply_discount(self):
         discount_rate = self.customer.get_discount() / 100
         return self.calculate_total() * (1 - discount_rate)
+
 
     def final_total(self):
         total_after_discount = self.apply_discount()
         total_with_tax = total_after_discount * (1 + Order.TAX_RATE)
         final_total = total_with_tax * (1 + Order.SERVICE_CHARGE)
         return final_total
+
 
     def __str__(self):
         dish_list = "\n".join([str(dish) for dish in self.dishes])
@@ -81,27 +89,29 @@ class GroupOrder(Order):
         super().__init__(customer=None)  # Групповой заказ не привязан к одному клиенту
         self.customers = customers
 
+
     def split_bill(self):
         if not self.customers:
             raise ValueError("Нет клиентов для разделения счета.")
         total = self.final_total()
         return total / len(self.customers)
 
+
     def __str__(self):
         customer_list = ", ".join([customer.name for customer in self.customers])
         dish_list = "\n".join([str(dish) for dish in self.dishes])
         return f"Group Order for {customer_list}:\n{dish_list}\nTotal: ${self.final_total():.2f}"
-    
+
+
 class Dish:
     def __init__(self, name, price, category):
         self.name = name
         self.price = price
         self.category = category
 
+
     def __str__(self):
         return f"Dish: {self.name}, Category: {self.category}, Price: ${self.price:.2f}"
-
-
 
 
 class Customer:
@@ -109,13 +119,17 @@ class Customer:
         self.name = name
         self.membership = membership
 
+
     def get_discount(self):
         if self.membership == "VIP":
             return 10  # VIP клиенты получают 10% скидки
         return 0  # Обычные клиенты не получают скидки
 
+
     def __str__(self):
         return f"Customer: {self.name}, Membership: {self.membership}"
+
+
 # Пример использования
 
 # Создаем блюда
