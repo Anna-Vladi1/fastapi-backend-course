@@ -6,52 +6,13 @@ class Order:
     def __init__(self, customer):
         self.customer = customer
         self.dishes = []
-
-def main():
-    """
-    Точка входа в программу: здесь мы загружаем книги,
-    показываем меню и обрабатываем ввод пользователя.
-    """
-    books = load_books()  # Загрузили список книг из JSON
-
-    while True:
-        print("\n=== Управление онлайн-библиотекой ===")
-        print("1. Показать все книги")
-        print("2. Добавить книгу")
-        print("3. Удалить книгу")
-        print("4. Поиск книг")
-        print("5. Выйти")
-
-        choice = input("Выберите действие (1-5): ").strip()
-
-        if choice == '1':
-            print("\nСписок книг:")
-            print(list_books(books))
-
-        elif choice == '2':
-            print("\nДобавление новой книги:")
-            title = input("Введите название: ").strip()
-            author = input("Введите автора: ").strip()
-            year = input("Введите год издания: ").strip()
-
-            # Получаем новый список с добавленной книгой
-            new_books = add_book(books, title, author, year)
-            books = new_books  # Обновляем переменную, чтобы сохранить изменения
-            save_books(books)  # Сразу сохраняем в файл
-            print("Книга добавлена!")
-
-        elif choice == '3':
-            print("\nУдаление книги:")
-            title_to_remove = input("Введите название книги, которую хотите удалить: ").strip()
-
-            new_books = remove_book(books, title_to_remove)
-            if len(new_books) < len(books):
-                books = new_books
-                save_books(books)
-                print("Книга удалена!")
-            else:
-                print("Книга с таким названием не найдена.")
-
+    
+    def add_dish(self, dish):
+        if isinstance(dish, Dish):
+            self.dishes.append(dish)
+        else:
+            raise ValueError("Можно добавлять только объекты класса Dish.")
+    
     def remove_dish(self, dish):
         if dish in self.dishes:
             self.dishes.remove(dish)
@@ -61,15 +22,16 @@ def main():
     def calculate_total(self):
         return sum(dish.price for dish in self.dishes)
 
-    def apply_discount(self):
-        discount_rate = self.customer.get_discount() / 100
-        return self.calculate_total() * (1 - discount_rate)
 
     def final_total(self):
         total_after_discount = self.apply_discount()
         total_with_tax = total_after_discount * (1 + Order.TAX_RATE)
         final_total = total_with_tax * (1 + Order.SERVICE_CHARGE)
         return final_total
+
+    def apply_discount(self):
+        discount_rate = self.customer.get_discount() / 100
+        return self.calculate_total() * (1 - discount_rate)
 
     def __str__(self):
         dish_list = "\n".join([str(dish) for dish in self.dishes])
@@ -91,7 +53,7 @@ class GroupOrder(Order):
         customer_list = ", ".join([customer.name for customer in self.customers])
         dish_list = "\n".join([str(dish) for dish in self.dishes])
         return f"Group Order for {customer_list}:\n{dish_list}\nTotal: ${self.final_total():.2f}"
-    
+  
 class Dish:
     def __init__(self, name, price, category):
         self.name = name
@@ -100,9 +62,6 @@ class Dish:
 
     def __str__(self):
         return f"Dish: {self.name}, Category: {self.category}, Price: ${self.price:.2f}"
-
-
-
 
 class Customer:
     def __init__(self, name, membership="Regular"):
